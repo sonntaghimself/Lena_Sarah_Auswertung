@@ -30,6 +30,7 @@ dat <-
         select(c(
                  id,
                  sex,
+                 a10_alt,
                  a11,
                  starts_with(c("a4_ap",
                                "a6_druck",
@@ -40,6 +41,7 @@ dat <-
              
 names(dat) <- c("id",
                "sex",
+               "age",
                "kauf_gew",
                "alt_nicht",
                "alt_Unterricht",
@@ -52,6 +54,13 @@ names(dat) <- c("id",
 ##############################
 #  getting the right format  #
 ##############################
+
+#########
+#  age  #
+#########
+dat$age <-
+    dat$age %>%
+        as_factor()
 
 ########
 #  a4  #
@@ -99,8 +108,22 @@ dat %>%
     na.omit() %>%
     nrow()
 
+dat <-
+    dat %>%
+    na.omit()
 
 ### done to this point
+#########################################################
+#  excluding everyone who isn't kaufmännisch oder gew.  #
+#########################################################
+
+dat <-
+    dat %>%
+        subset(
+            kauf_gew != "sonst"
+        )
+
+dat$kauf_gew <- as.factor(dat_a4$kauf_gew)
 
 ###############################################################################
 #                           few descriptive things                            #
@@ -108,98 +131,80 @@ dat %>%
 ####################################################
 #  exclusion should be done at this point already  #
 ####################################################
-
 #########
 #  age  #
 #########
+dat$age %>%
+    table()
+
+# unter 16 Jahre     16 bis 18 Jahre     19 bis 21 Jahre     22 bis 24 Jahre
+#              7                 317                 507                 201
+# 25 bis 27 Jahre 28 Jahre oder älter
+#                 64               73
+
+pl_age <-
+    dat %>%
+        ggplot(aes(age)) +
+        geom_bar(stat="count") +
+        theme_minimal()
+
+pl_age
 
 #########
 #  sex  #
 #########
+dat$sex %>%
+    table()
 
+  # f   m
+# 519 650
 #############
 #  N vs. n  #
 #############
 
+dat %>%
+    nrow()
+# [1] 1169
+
 ###############################################################################
 #                                  analysis (a4)                              #
 ###############################################################################
-#######################
-#  variables from a4  #
-#######################
-a4 <-
-    dat %>%
-    select(c(
-             id,
-             sex,
-             a11,
-             starts_with(c("a4_ap"),
-
-                        )
-             )
-    )
-
-names(a4) <- c("id",
-               "sex",
-               "kauf_gew",
-               "nicht_alt",
-               "Unterricht_alt",
-               "Arbeitsplatz_alt",
-               "Freizeit_alt"
-            )
-
-##################
-#  right format  #
-##################
-a4 %>% str
-
-a4 <-
-    a4 %>%
-        mutate(nicht = case_when(nicht_alt == 1 ~ 1,
-                               TRUE ~ 0
-                               ),
-               Unterricht = case_when(Unterricht_alt == 2 ~ 1,
-                                      TRUE ~ 0
-                                ),
-               Arbeitsplatz = case_when(Arbeitsplatz_alt == 3 ~ 1,
-                                      TRUE ~ 0
-                                ),
-               Freizeit = case_when(Freizeit_alt == 4 ~ 1,
-                                      TRUE ~ 0
-                                ),
-        )
-
 ####################################################
 #  aggregating across Kaufmännisch vs. Gewerblich  #
 ####################################################
-a4_kg <- a4 %>%
-    select(kauf_gew, nicht, Unterricht, Arbeitsplatz, Freizeit) %>%
-    group_by(kauf_gew) %>%
-    summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
-                     ,mean))
+# a4_kg <- dat %>%
+#     select(kauf_gew, nicht, Unterricht, Arbeitsplatz, Freizeit) %>%
+#     group_by(kauf_gew) %>%
+#     summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
+#                      ,mean))
 
 #####################
 #  aggregating Sex  #
 #####################
-a4_mf <- a4 %>%
-    select(sex, nicht, Unterricht, Arbeitsplatz, Freizeit) %>%
-    group_by(sex) %>%
-    summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
-                     ,mean))
+# a4_mf <- dat %>%
+#     select(sex, nicht, Unterricht, Arbeitsplatz, Freizeit) %>%
+#     group_by(sex) %>%
+#     summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
+#                      ,mean))
 
 ###############################################################################
 #                                 statistics                                  #
 ###############################################################################
-a4_1 <-
-    a4 %>%
-        subset(
-            kauf_gew != "sonst"
-        )
 
-a4_1$kauf_gew <- as.factor(a4_1$kauf_gew)
+dat %>%
+    nrow()
 
-## NOTE: I have to apply na.omit. df are all messed up.
+dat %>%
+    subset(kauf_gew == "gew") %>%
+    nrow()
 
+# 454
+
+dat %>%
+    subset(kauf_gew == "kauf") %>%
+    nrow()
+
+# 715
 #######################################################
 #  Unterschied; zwischen Kaufmännisch vs. Gewerblich  #
 #######################################################
@@ -209,72 +214,124 @@ a4_1$kauf_gew <- as.factor(a4_1$kauf_gew)
 ##################
 #  nutzen nicht  #
 ##################
-t.test(a4_1$nicht ~ a4_1$kauf_gew)
+##################################
+#  Testen von Varianzgleichheit  #
+##################################
+var.test(dat$nicht ~ dat$kauf_gew)
 
-        # Welch Two Sample t-test
+        # F test to compare two variances
 
-# data:  a4_1$nicht by a4_1$kauf_gew
-# t = -3.0317, df = 951.62, p-value = 0.002498
-# alternative hypothesis: true difference in means between group gew and group 
-# kauf is not equal to 0
+# data:  dat$nicht by dat$kauf_gew
+# F = 1.1647, num df = 453, denom df = 714, p-value = 0.0703
+# alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
-#  -0.13629572 -0.02917998
+ # 0.9874642 1.3781326
 # sample estimates:
-#  mean in group gew mean in group kauf
-        #  0.6497890         0.7325269
+# ratio of variances
+        #   1.164723
 
-# kauf benutzen öfter nicht; als gew
+# F-Test was not significant, equality of variances can be assumed
+
+t.test(dat$nicht ~ dat$kauf_gew, var.equal=TRUE)
+
+        # Two Sample t-test
+
+# data:  dat$nicht by dat$kauf_gew
+# t = -2.9585, df = 1167, p-value = 0.003154
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # -0.13417678 -0.02717377
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.6563877          0.7370629
 
 ################
 #  Unterricht  #
 ################
-t.test(a4_1$Unterricht ~ a4_1$kauf_gew)
+var.test(dat$Unterricht ~ dat$kauf_gew)
+
+        # F test to compare two variances
+
+# data:  dat$Unterricht by dat$kauf_gew
+# F = 1.8776, num df = 453, denom df = 714, p-value = 4.885e-14
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 1.591863 2.221648
+# sample estimates:
+# ratio of variances
+        #   1.877616
+
+t.test(dat$Unterricht ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
-# data:  a4_1$Unterricht by a4_1$kauf_gew
-# t = 2.5363, df = 802.43, p-value = 0.01139
-# alternative hypothesis: true difference in means between group gew and group 
-# kauf is not equal to 0
+# data:  dat$Unterricht by dat$kauf_gew
+# t = 2.6377, df = 756.32, p-value = 0.008519
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # 0.008226657 0.064558153
+ # 0.009906372 0.067565055
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.07805907         0.04166667
+        # 0.07929515         0.04055944
 
 ##################
 #  Arbeitsplatz  #
 ##################
-t.test(a4_1$Arbeitsplatz ~ a4_1$kauf_gew)
+var.test(dat$Arbeitsplatz ~ dat$kauf_gew)
+
+        # F test to compare two variances
+
+# data:  dat$Arbeitsplatz by dat$kauf_gew
+# F = 1.3945, num df = 453, denom df = 714, p-value = 7.515e-05
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 1.182269 1.650008
+# sample estimates:
+# ratio of variances
+        #   1.394497
+
+t.test(dat$Arbeitsplatz ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
-# data:  a4_1$Arbeitsplatz by a4_1$kauf_gew
-# t = 1.3941, df = 851.13, p-value = 0.1637
-# alternative hypothesis: true difference in means between group gew and group 
-# kauf is not equal to 0
+# data:  dat$Arbeitsplatz by dat$kauf_gew
+# t = 1.0103, df = 847.92, p-value = 0.3126
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # -0.006246572  0.036871317
+ # -0.01024929  0.03199231
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.04219409         0.02688172
+        # 0.03744493         0.02657343
+
 
 ##############
 #  Freizeit  #
 ##############
-t.test(a4_1$Freizeit ~ a4_1$kauf_gew)
+var.test(dat$Freizeit ~ dat$kauf_gew)
 
-        # Welch Two Sample t-test
+        # F test to compare two variances
 
-# data:  a4_1$Freizeit by a4_1$kauf_gew
-# t = 2.8541, df = 928.62, p-value = 0.004412
-# alternative hypothesis: true difference in means between group gew and group
-# kauf is not equal to 0
+# data:  dat$Freizeit by dat$kauf_gew
+# F = 1.2608, num df = 453, denom df = 714, p-value = 0.005884
+# alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.0224546 0.1213116
+ # 1.068933 1.491832
+# sample estimates:
+# ratio of variances
+        #   1.260816
+
+t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
+
+        # Two Sample t-test
+
+# data:  dat$Freizeit by dat$kauf_gew
+# t = 3.1395, df = 1167, p-value = 0.001735
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # 0.02960451 0.12825877
 # sample estimates:
  # mean in group gew mean in group kauf
-        #  0.2721519          0.2002688
+        #  0.2775330          0.1986014
 
 
 ########################################
@@ -286,69 +343,16 @@ t.test(a4_1$Freizeit ~ a4_1$kauf_gew)
 ##################
 #  nutzen nicht  #
 ##################
-t.test(a4$nicht ~ a4$sex)
-
-        # Welch Two Sample t-test
-
-# data:  a4$nicht by a4$sex
-# t = -0.96441, df = 1651.5, p-value = 0.335
-# alternative hypothesis: true difference in means between group f and group m 
-# is not equal to 0
-# 95 percent confidence interval:
- # -0.06624214  0.02257241
-# sample estimates:
-# mean in group f mean in group m
-      # 0.6800000       0.7018349
 
 ################
 #  Unterricht  #
 ################
-t.test(a4$Unterricht ~ a4$sex)
-
-        # Welch Two Sample t-test
-
-# data:  a4$Unterricht by a4$sex
-# t = -2.4842, df = 1632, p-value = 0.01309
-# alternative hypothesis: true difference in means between group f and group m 
-# is not equal to 0
-# 95 percent confidence interval:
- # -0.049315817 -0.005798861
-# sample estimates:
-# mean in group f mean in group m
-     # 0.04125000      0.06880734
-
 ##################
 #  Arbeitsplatz  #
 ##################
-t.test(a4$Arbeitsplatz ~ a4$sex)
-
-        # Welch Two Sample t-test
-
-# data:  a4$Arbeitsplatz by a4$sex
-# t = -2.5976, df = 1569.9, p-value = 0.009474
-# alternative hypothesis: true difference in means between group f and group m 
-# is not equal to 0
-# 95 percent confidence interval:
- # -0.039187827 -0.005468137
-# sample estimates:
-# mean in group f mean in group m
-     # 0.02125000      0.04357798
-
 ##############
 #  Freizeit  #
 ##############
-t.test(a4$Freizeit ~ a4$sex)
-
-        # Welch Two Sample t-test
-
-# data:  a4$Freizeit by a4$sex
-# t = 1.2072, df = 1645.1, p-value = 0.2275
-# alternative hypothesis: true difference in means between group f and group m is not equal to 0
-# 95 percent confidence interval:
- # -0.01569817  0.06595046
-# sample estimates:
-# mean in group f mean in group m
-      # 0.2487500       0.2236239
 
 # plots {{{{{ #
 ###############################################################################
