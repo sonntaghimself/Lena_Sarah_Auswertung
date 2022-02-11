@@ -15,38 +15,92 @@ dat <- read_dta("ZA6748_v1-0-0.dta")
 dat$sex <- dat$a9_gesch %>% as_factor()
 levels(dat$sex) <- list("f" = "weiblich", "m" = "männlich")
 
-##############################
-#  dropping useless columns  #
-##############################
-
-dat <-
-    dat %>%
-        select(c(
-                 id,
-                 sex,
-                 starts_with(c(
-                               "a4",
-                               "a6",
-                               "a8",
-                               "a10",
-                               "a11"
-                               )
-                 ))
-        )
-
 dat %>% nrow()
-dat %>% na.omit() %>% nrow()
-###############
-#  case_when  #
-###############
 
-dat_1 <-
+###############################################################################
+#      eexclusion; dropping useless columns and giving meaningful names       #
+###############################################################################
+dat <-
     dat %>%
         mutate(a11 = case_when(a11_kauf == 1 & a11_gew == 0 ~ "kauf",
                                a11_kauf == 0 & a11_gew == 2 ~ "gew",
                                TRUE ~ "sonst"
                                ),
+        ) %>%
+        select(c(
+                 id,
+                 sex,
+                 a11,
+                 starts_with(c("a4_ap",
+                               "a6_druck",
+                               "a8_selb")
+                 )
+                 )
         )
+             
+names(dat) <- c("id",
+               "sex",
+               "kauf_gew",
+               "alt_nicht",
+               "alt_Unterricht",
+               "alt_Arbeitsplatz",
+               "alt_Freizeit",
+               "a6",
+               "a8"
+            )
+
+##############################
+#  getting the right format  #
+##############################
+
+########
+#  a4  #
+########
+
+dat <-
+    dat %>%
+        mutate(nicht = case_when(alt_nicht == 1 ~ 1,
+                               TRUE ~ 0
+                               ),
+               Unterricht = case_when(alt_Unterricht == 2 ~ 1,
+                                      TRUE ~ 0
+                                ),
+               Arbeitsplatz = case_when(alt_Arbeitsplatz == 3 ~ 1,
+                                      TRUE ~ 0
+                                ),
+               Freizeit = case_when(alt_Freizeit == 4 ~ 1,
+                                      TRUE ~ 0
+                                ),
+        )
+
+dat  <-
+    dat %>%
+    select(!(starts_with("alt")))
+
+########
+#  a6  #
+########
+
+dat$a6 <-
+    dat$a6 %>%
+        as_factor()
+
+########
+#  a8  #
+########
+
+dat$a8 <-
+    dat$a8 %>%
+        as_factor()
+
+dat %>% nrow()
+
+dat %>%
+    na.omit() %>%
+    nrow()
+
+
+### done to this point
 
 ###############################################################################
 #                           few descriptive things                            #
@@ -74,12 +128,13 @@ dat_1 <-
 #  variables from a4  #
 #######################
 a4 <-
-    dat_1 %>%
+    dat %>%
     select(c(
              id,
              sex,
              a11,
-             starts_with(c("a4_ap")
+             starts_with(c("a4_ap"),
+
                         )
              )
     )
