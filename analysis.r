@@ -524,6 +524,23 @@ summary(a8_anova)
 ###############################################################################
 #                                   plots                                     #
 ###############################################################################
+
+#######################################################
+#  aggregating across Kaufmännisch vs. Gewerblich  #
+#######################################################
+a4_kg <- dat %>%
+    group_by(kauf_gew) %>%
+    summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
+                     ,mean))
+
+#####################
+#  aggregating Sex  #
+#####################
+a4_mf <- dat %>%
+    group_by(sex) %>%
+    summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
+                     ,mean))
+
 ##############################
 #  Kaufmännisch; Gewerblich  #
 ##############################
