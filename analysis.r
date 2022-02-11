@@ -209,10 +209,8 @@ dat$kauf_gew <- as.factor(dat$kauf_gew)
 dat$age %>%
     table()
 
-# unter 16 Jahre     16 bis 18 Jahre     19 bis 21 Jahre     22 bis 24 Jahre
-#              7                 317                 507                 201
-# 25 bis 27 Jahre 28 Jahre oder älter
-#                 64               73
+# unter 16 Jahre     16 bis 18 Jahre     19 bis 21 Jahre     22 bis 24 Jahre     25 bis 27 Jahre 28 Jahre oder älter
+#              6                 201                 298                 120                  34                  40
 
 pl_age <-
     dat %>%
@@ -233,7 +231,7 @@ dat$sex %>%
     table()
 
   # f   m
-# 519 650
+# 299 400
 #############
 #  N vs. n  #
 #############
@@ -274,13 +272,13 @@ dat %>%
     subset(kauf_gew == "gew") %>%
     nrow()
 
-# 454
+# 290
 
 dat %>%
     subset(kauf_gew == "kauf") %>%
     nrow()
 
-# 715
+# 409
 #######################################################
 #  Unterschied; zwischen Kaufmännisch vs. Gewerblich  #
 #######################################################
@@ -298,28 +296,28 @@ var.test(dat$nicht ~ dat$kauf_gew)
         # F test to compare two variances
 
 # data:  dat$nicht by dat$kauf_gew
-# F = 1.1647, num df = 453, denom df = 714, p-value = 0.0703
+# F = 1.1221, num df = 289, denom df = 408, p-value = 0.2854
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.9874642 1.3781326
+ # 0.908211 1.391904
 # sample estimates:
 # ratio of variances
-        #   1.164723
+        #   1.122127
 
 # F-Test was not significant, equality of variances can be assumed
 
-t.test(dat$nicht ~ dat$kauf_gew, var.equal=TRUE)
+t.test(dat$nicht ~ dat$kauf_gew, var.equal = TRUE)
 
         # Two Sample t-test
 
 # data:  dat$nicht by dat$kauf_gew
-# t = -2.9585, df = 1167, p-value = 0.003154
+# t = -2.4548, df = 697, p-value = 0.01434
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # -0.13417678 -0.02717377
+ # -0.16105837 -0.01791473
 # sample estimates:
  # mean in group gew mean in group kauf
-        #  0.6563877          0.7370629
+        #  0.6000000          0.6894866
 
 ################
 #  Unterricht  #
@@ -329,26 +327,26 @@ var.test(dat$Unterricht ~ dat$kauf_gew)
         # F test to compare two variances
 
 # data:  dat$Unterricht by dat$kauf_gew
-# F = 1.8776, num df = 453, denom df = 714, p-value = 4.885e-14
+# F = 1.6808, num df = 289, denom df = 408, p-value = 1.416e-06
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 1.591863 2.221648
+ # 1.360363 2.084862
 # sample estimates:
 # ratio of variances
-        #   1.877616
+        #   1.680778
 
 t.test(dat$Unterricht ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
 # data:  dat$Unterricht by dat$kauf_gew
-# t = 2.6377, df = 756.32, p-value = 0.008519
+# t = 2.0958, df = 518.86, p-value = 0.03659
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # 0.009906372 0.067565055
+ # 0.002803248 0.086733890
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.07929515         0.04055944
+        # 0.10344828         0.0586797
 
 ##################
 #  Arbeitsplatz  #
@@ -358,26 +356,26 @@ var.test(dat$Arbeitsplatz ~ dat$kauf_gew)
         # F test to compare two variances
 
 # data:  dat$Arbeitsplatz by dat$kauf_gew
-# F = 1.3945, num df = 453, denom df = 714, p-value = 7.515e-05
+# F = 1.4852, num df = 289, denom df = 408, p-value = 0.0002417
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 1.182269 1.650008
+ # 1.202074 1.842271
 # sample estimates:
 # ratio of variances
-        #   1.394497
+        #   1.485205
 
 t.test(dat$Arbeitsplatz ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
 # data:  dat$Arbeitsplatz by dat$kauf_gew
-# t = 1.0103, df = 847.92, p-value = 0.3126
+# t = 1.1048, df = 543.13, p-value = 0.2697
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # -0.01024929  0.03199231
+ # -0.01361082  0.04859944
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.03744493         0.02657343
+        # 0.05172414         0.03422983
 
 
 ##############
@@ -388,26 +386,27 @@ var.test(dat$Freizeit ~ dat$kauf_gew)
         # F test to compare two variances
 
 # data:  dat$Freizeit by dat$kauf_gew
-# F = 1.2608, num df = 453, denom df = 714, p-value = 0.005884
+# F = 1.2053, num df = 289, denom df = 408, p-value = 0.08353
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 1.068933 1.491832
+ # 0.9755627 1.4951254
 # sample estimates:
 # ratio of variances
-        #   1.260816
+        #   1.205343
+
 
 t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
 
         # Two Sample t-test
 
 # data:  dat$Freizeit by dat$kauf_gew
-# t = 3.1395, df = 1167, p-value = 0.001735
+# t = 2.4526, df = 697, p-value = 0.01443
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # 0.02960451 0.12825877
+ # 0.01666135 0.15039033
 # sample estimates:
  # mean in group gew mean in group kauf
-        #  0.2775330          0.1986014
+        #  0.3206897          0.2371638
 
 
 ########################################
@@ -424,26 +423,26 @@ var.test(dat$nicht ~ dat$sex)
         # F test to compare two variances
 
 # data:  dat$nicht by dat$sex
-# F = 1.0023, num df = 518, denom df = 649, p-value = 0.9758
+# F = 1.0328, num df = 298, denom df = 399, p-value = 0.7615
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.8517698 1.1811709
+ # 0.8364136 1.2795743
 # sample estimates:
 # ratio of variances
-        #   1.002276
+        #   1.032816
 
 t.test(dat$nicht ~ dat$kauf_gew, var.equal=TRUE)
 
         # Two Sample t-test
 
 # data:  dat$nicht by dat$kauf_gew
-# t = -2.9585, df = 1167, p-value = 0.003154
+# t = -2.4548, df = 697, p-value = 0.01434
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # -0.13417678 -0.02717377
+ # -0.16105837 -0.01791473
 # sample estimates:
  # mean in group gew mean in group kauf
-        #  0.6563877          0.7370629
+        #  0.6000000          0.6894866
 
 ################
 #  Unterricht  #
@@ -453,26 +452,26 @@ var.test(dat$Unterricht ~ dat$sex)
         # F test to compare two variances
 
 # data:  dat$Unterricht by dat$sex
-# F = 0.57521, num df = 518, denom df = 649, p-value = 6.855e-11
+# F = 0.69139, num df = 298, denom df = 399, p-value = 0.0007749
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.4888306 0.6778739
+ # 0.5599104 0.8565702
 # sample estimates:
 # ratio of variances
-        #  0.5752062
+        #  0.6913857
 
 t.test(dat$Unterricht ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
 # data:  dat$Unterricht by dat$kauf_gew
-# t = 2.6377, df = 756.32, p-value = 0.008519
+# t = 2.0958, df = 518.86, p-value = 0.03659
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # 0.009906372 0.067565055
+ # 0.002803248 0.086733890
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.07929515         0.04055944
+        # 0.10344828         0.05867971
 
 ##################
 #  Arbeitsplatz  #
@@ -482,26 +481,26 @@ var.test(dat$Arbeitsplatz ~ dat$sex)
         # F test to compare two variances
 
 # data:  dat$Arbeitsplatz by dat$sex
-# F = 0.63543, num df = 518, denom df = 649, p-value = 7.918e-08
+# F = 0.52393, num df = 298, denom df = 399, p-value = 5.821e-09
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.5400070 0.7488415
+ # 0.4242952 0.6491013
 # sample estimates:
 # ratio of variances
-        #  0.6354254
+        #  0.5239259
 
 t.test(dat$Arbeitsplatz ~ dat$kauf_gew, var.equal=FALSE)
 
         # Welch Two Sample t-test
 
 # data:  dat$Arbeitsplatz by dat$kauf_gew
-# t = 1.0103, df = 847.92, p-value = 0.3126
+# t = 1.1048, df = 543.13, p-value = 0.2697
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # -0.01024929  0.03199231
+ # -0.01361082  0.04859944
 # sample estimates:
  # mean in group gew mean in group kauf
-        # 0.03744493         0.02657343
+        # 0.05172414         0.03422983
 
 ##############
 #  Freizeit  #
@@ -511,26 +510,26 @@ var.test(dat$Freizeit ~ dat$sex)
         # F test to compare two variances
 
 # data:  dat$Freizeit by dat$sex
-# F = 1.0438, num df = 518, denom df = 649, p-value = 0.6049
+# F = 1.0659, num df = 298, denom df = 399, p-value = 0.5521
 # alternative hypothesis: true ratio of variances is not equal to 1
 # 95 percent confidence interval:
- # 0.8870267 1.2300625
+ # 0.8631705 1.3205080
 # sample estimates:
 # ratio of variances
-        #   1.043763
+        #   1.065856
 
 t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
 
         # Two Sample t-test
 
 # data:  dat$Freizeit by dat$kauf_gew
-# t = 3.1395, df = 1167, p-value = 0.001735
+# t = 2.4526, df = 697, p-value = 0.01443
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
- # 0.02960451 0.12825877
+ # 0.01666135 0.15039033
 # sample estimates:
  # mean in group gew mean in group kauf
-        #  0.2775330          0.1986014
+        #  0.3206897          0.2371638
 
 # plots {{{{{ #
 ###############################################################################
@@ -643,17 +642,38 @@ dat_1 <-
     dat %>%
         subset(Unterricht == 1)
 
-dat_1 %>%
-    group_by(kauf_gew, sex) %>%
-        summarise(
-        count = n(),
-        mean = mean(a6, na.rm = TRUE),
-        sd = sd(a6, na.rm = TRUE)
-  )
+# dat_1 %>%
+#     group_by(kauf_gew, sex) %>%
+#         summarise(
+#         count = n(),
+#         mean = mean(a6, na.rm = TRUE),
+#         sd = sd(a6, na.rm = TRUE)
+#   )
 
-dat_aov <- 
-    dat %>%
-        aov(a6 ~ kauf_gew + sex)
+########
+#  a6  #
+########
+
+a6_anova  <- aov(a6 ~ kauf_gew + sex, dat_1)
+summary(a6_anova)
+
+            # Df Sum Sq Mean Sq F value Pr(>F)
+# kauf_gew     1    0.3  0.3000   0.411  0.524
+# sex          1    0.5  0.5048   0.692  0.409
+# Residuals   51   37.2  0.7293
+
+########
+#  a8  #
+########
+
+a8_anova  <- aov(a8 ~ kauf_gew + sex, dat_1)
+summary(a8_anova)
+
+            # Df Sum Sq Mean Sq F value Pr(>F)
+# kauf_gew     1   0.01  0.0148   0.023  0.880
+# sex          1   0.15  0.1453   0.226  0.637
+# Residuals   51  32.82  0.6436
+
 ##############################################################
 #  Achtung! 6 vs. 8 sind verschieden gepolte Likert Skalen.  #
 ##############################################################
