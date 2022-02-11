@@ -96,66 +96,9 @@ dat$a6 <-
     # replace_na("0") %>%
     as.numeric
 
-# 4 = stimme überhaupt nicht zu 
+# 4 = stimme überhaupt nicht zu
 # 1 = voll und ganz
 # 0 = weiß nicht
-
-
-# trying around with factor {{{{{ #
-# dat$a6 <-
-#     dat$a6 %>%
-#         as_factor()
-
-# dat_1 <- dat
-
-# dat$a6 %>% head()
-
-# # dat$a6 <-
-# #     dat$a6 %>%
-# #     as.character()
-
-# # dat$a6 %>% head()
-
-# dat_1$a6 %>% head()
-
-# dat_1$a6 <-
-#     dat_1$a6 %>%
-#     as.character() %>%
-#     replace_na("0") %>%
-#     as.numeric
-
-# dat_1$a6 <- 
-#     dat_1$a6 %>%
-#     str_replace_all(
-#                     c(
-#                       "0" = "weiß ich nicht",
-#                       "1" = "stimme ich voll und ganz zu",
-#                       "2" = "stimme ich eher zu",
-#                       "3" = "stimme ich eher nicht zu",
-#                       "4" = "stimme ich überhaupt nicht zu" 
-#                     )
-#     )
-
-# dat_1$a6 %>%
-#     as.factor()
-
-# levels(dat_1$a6) <-
-#     list(
-#          "weiß ich nicht"  = 0,
-#          "stimme ich voll und ganz zu" = 1,
-#          "stimme ich eher zu" = 2,
-#          "stimme ich eher nicht zu" = 3,
-#          "stimme ich überhaupt nicht zu" = 4
-#     )
-
-# levels(dat$sex) <- list("f" = "weiblich", "m" = "männlich")
-# dat$sex
-
-
-# dat_1$a6 %>% head()
-# dat_1$a6 
-
-# }}}}} trying around with factor #
 
 ########
 #  a8  #
@@ -168,7 +111,7 @@ dat$a8 <-
     as.numeric
 
 # 4 = überhaupt nicht
-# 1 = motiviert sehr 
+# 1 = motiviert sehr
 
 # dat$a8 <-
 #     dat$a8 %>%
@@ -184,7 +127,6 @@ dat <-
     dat %>%
     na.omit()
 
-### done to this point
 #########################################################
 #  excluding everyone who isn't kaufmännisch oder gew.  #
 #########################################################
@@ -531,7 +473,54 @@ t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
  # mean in group gew mean in group kauf
         #  0.3206897          0.2371638
 
-# plots {{{{{ #
+
+##########################################################################
+#  geg: 4 im Unterricht benutzen, kauf_gew & Sex -> Aufg. 6 und Aufg. 8  #
+##########################################################################
+
+########################
+#  geg. im Unterricht  #
+########################
+dat_1 <-
+    dat %>%
+        subset(Unterricht == 1)
+
+# dat_1 %>%
+#     group_by(kauf_gew, sex) %>%
+#         summarise(
+#         count = n(),
+#         mean = mean(a6, na.rm = TRUE),
+#         sd = sd(a6, na.rm = TRUE)
+#   )
+
+########
+#  a6  #
+########
+
+a6_anova  <- aov(a6 ~ kauf_gew + sex, dat_1)
+summary(a6_anova)
+
+            # Df Sum Sq Mean Sq F value Pr(>F)
+# kauf_gew     1    0.3  0.3000   0.411  0.524
+# sex          1    0.5  0.5048   0.692  0.409
+# Residuals   51   37.2  0.7293
+
+########
+#  a8  #
+########
+
+a8_anova  <- aov(a8 ~ kauf_gew + sex, dat_1)
+summary(a8_anova)
+
+            # Df Sum Sq Mean Sq F value Pr(>F)
+# kauf_gew     1   0.01  0.0148   0.023  0.880
+# sex          1   0.15  0.1453   0.226  0.637
+# Residuals   51  32.82  0.6436
+
+##############################################################
+#  Achtung! 6 vs. 8 sind verschieden gepolte Likert Skalen.  #
+##############################################################
+
 ###############################################################################
 #                                   plots                                     #
 ###############################################################################
@@ -628,52 +617,3 @@ p_a4_mf_fr <- a4_mf %>% ggplot(aes(x = sex, y = Freizeit), colors = sex) +
     )
 
 p_a4_mf_fr
-
-# }}}}} plots #
-
-##########################################################################
-#  geg: 4 im Unterricht benutzen, kauf_gew & Sex -> Aufg. 6 und Aufg. 8  #
-##########################################################################
-
-########################
-#  geg. im Unterricht  #
-########################
-dat_1 <-
-    dat %>%
-        subset(Unterricht == 1)
-
-# dat_1 %>%
-#     group_by(kauf_gew, sex) %>%
-#         summarise(
-#         count = n(),
-#         mean = mean(a6, na.rm = TRUE),
-#         sd = sd(a6, na.rm = TRUE)
-#   )
-
-########
-#  a6  #
-########
-
-a6_anova  <- aov(a6 ~ kauf_gew + sex, dat_1)
-summary(a6_anova)
-
-            # Df Sum Sq Mean Sq F value Pr(>F)
-# kauf_gew     1    0.3  0.3000   0.411  0.524
-# sex          1    0.5  0.5048   0.692  0.409
-# Residuals   51   37.2  0.7293
-
-########
-#  a8  #
-########
-
-a8_anova  <- aov(a8 ~ kauf_gew + sex, dat_1)
-summary(a8_anova)
-
-            # Df Sum Sq Mean Sq F value Pr(>F)
-# kauf_gew     1   0.01  0.0148   0.023  0.880
-# sex          1   0.15  0.1453   0.226  0.637
-# Residuals   51  32.82  0.6436
-
-##############################################################
-#  Achtung! 6 vs. 8 sind verschieden gepolte Likert Skalen.  #
-##############################################################
