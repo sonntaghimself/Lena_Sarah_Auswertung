@@ -92,7 +92,70 @@ dat  <-
 
 dat$a6 <-
     dat$a6 %>%
-        as_factor()
+    as.character() %>%
+    # replace_na("0") %>%
+    as.numeric
+
+# 4 = stimme überhaupt nicht zu 
+# 1 = voll und ganz
+# 0 = weiß nicht
+
+
+# trying around with factor {{{{{ #
+# dat$a6 <-
+#     dat$a6 %>%
+#         as_factor()
+
+# dat_1 <- dat
+
+# dat$a6 %>% head()
+
+# # dat$a6 <-
+# #     dat$a6 %>%
+# #     as.character()
+
+# # dat$a6 %>% head()
+
+# dat_1$a6 %>% head()
+
+# dat_1$a6 <-
+#     dat_1$a6 %>%
+#     as.character() %>%
+#     replace_na("0") %>%
+#     as.numeric
+
+# dat_1$a6 <- 
+#     dat_1$a6 %>%
+#     str_replace_all(
+#                     c(
+#                       "0" = "weiß ich nicht",
+#                       "1" = "stimme ich voll und ganz zu",
+#                       "2" = "stimme ich eher zu",
+#                       "3" = "stimme ich eher nicht zu",
+#                       "4" = "stimme ich überhaupt nicht zu" 
+#                     )
+#     )
+
+# dat_1$a6 %>%
+#     as.factor()
+
+# levels(dat_1$a6) <-
+#     list(
+#          "weiß ich nicht"  = 0,
+#          "stimme ich voll und ganz zu" = 1,
+#          "stimme ich eher zu" = 2,
+#          "stimme ich eher nicht zu" = 3,
+#          "stimme ich überhaupt nicht zu" = 4
+#     )
+
+# levels(dat$sex) <- list("f" = "weiblich", "m" = "männlich")
+# dat$sex
+
+
+# dat_1$a6 %>% head()
+# dat_1$a6 
+
+# }}}}} trying around with factor #
 
 ########
 #  a8  #
@@ -100,7 +163,16 @@ dat$a6 <-
 
 dat$a8 <-
     dat$a8 %>%
-        as_factor()
+    as.character() %>%
+    # replace_na("0") %>%
+    as.numeric
+
+# 4 = überhaupt nicht
+# 1 = motiviert sehr 
+
+# dat$a8 <-
+#     dat$a8 %>%
+#         as_factor()
 
 dat %>% nrow()
 
@@ -578,7 +650,10 @@ dat_1 %>%
         mean = mean(a6, na.rm = TRUE),
         sd = sd(a6, na.rm = TRUE)
   )
+
+dat_aov <- 
+    dat %>%
+        aov(a6 ~ kauf_gew + sex)
 ##############################################################
 #  Achtung! 6 vs. 8 sind verschieden gepolte Likert Skalen.  #
 ##############################################################
-
