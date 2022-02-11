@@ -123,7 +123,7 @@ dat <-
             kauf_gew != "sonst"
         )
 
-dat$kauf_gew <- as.factor(dat_a4$kauf_gew)
+dat$kauf_gew <- as.factor(dat$kauf_gew)
 
 ###############################################################################
 #                           few descriptive things                            #
@@ -146,7 +146,11 @@ pl_age <-
     dat %>%
         ggplot(aes(age)) +
         geom_bar(stat="count") +
-        theme_minimal()
+        theme_minimal() +
+        labs(title = "Alter der Teilnehmenden",
+             x = "Altersgruppe",
+             y = "Anzahl in Gruppe"
+        )
 
 pl_age
 
@@ -343,16 +347,118 @@ t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
 ##################
 #  nutzen nicht  #
 ##################
+var.test(dat$nicht ~ dat$sex)
+
+        # F test to compare two variances
+
+# data:  dat$nicht by dat$sex
+# F = 1.0023, num df = 518, denom df = 649, p-value = 0.9758
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 0.8517698 1.1811709
+# sample estimates:
+# ratio of variances
+        #   1.002276
+
+t.test(dat$nicht ~ dat$kauf_gew, var.equal=TRUE)
+
+        # Two Sample t-test
+
+# data:  dat$nicht by dat$kauf_gew
+# t = -2.9585, df = 1167, p-value = 0.003154
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # -0.13417678 -0.02717377
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.6563877          0.7370629
 
 ################
 #  Unterricht  #
 ################
+var.test(dat$Unterricht ~ dat$sex)
+
+        # F test to compare two variances
+
+# data:  dat$Unterricht by dat$sex
+# F = 0.57521, num df = 518, denom df = 649, p-value = 6.855e-11
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 0.4888306 0.6778739
+# sample estimates:
+# ratio of variances
+        #  0.5752062
+
+t.test(dat$Unterricht ~ dat$kauf_gew, var.equal=FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$Unterricht by dat$kauf_gew
+# t = 2.6377, df = 756.32, p-value = 0.008519
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # 0.009906372 0.067565055
+# sample estimates:
+ # mean in group gew mean in group kauf
+        # 0.07929515         0.04055944
+
 ##################
 #  Arbeitsplatz  #
 ##################
+var.test(dat$Arbeitsplatz ~ dat$sex)
+
+        # F test to compare two variances
+
+# data:  dat$Arbeitsplatz by dat$sex
+# F = 0.63543, num df = 518, denom df = 649, p-value = 7.918e-08
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 0.5400070 0.7488415
+# sample estimates:
+# ratio of variances
+        #  0.6354254
+
+t.test(dat$Arbeitsplatz ~ dat$kauf_gew, var.equal=FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$Arbeitsplatz by dat$kauf_gew
+# t = 1.0103, df = 847.92, p-value = 0.3126
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # -0.01024929  0.03199231
+# sample estimates:
+ # mean in group gew mean in group kauf
+        # 0.03744493         0.02657343
+
 ##############
 #  Freizeit  #
 ##############
+var.test(dat$Freizeit ~ dat$sex)
+
+        # F test to compare two variances
+
+# data:  dat$Freizeit by dat$sex
+# F = 1.0438, num df = 518, denom df = 649, p-value = 0.6049
+# alternative hypothesis: true ratio of variances is not equal to 1
+# 95 percent confidence interval:
+ # 0.8870267 1.2300625
+# sample estimates:
+# ratio of variances
+        #   1.043763
+
+t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
+
+        # Two Sample t-test
+
+# data:  dat$Freizeit by dat$kauf_gew
+# t = 3.1395, df = 1167, p-value = 0.001735
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
+# 95 percent confidence interval:
+ # 0.02960451 0.12825877
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.2775330          0.1986014
 
 # plots {{{{{ #
 ###############################################################################
@@ -458,6 +564,21 @@ p_a4_mf_fr
 #  geg: 4 im Unterricht benutzen, kauf_gew & Sex -> Aufg. 6 und Aufg. 8  #
 ##########################################################################
 
+########################
+#  geg. im Unterricht  #
+########################
+dat_1 <-
+    dat %>%
+        subset(Unterricht == 1)
+
+dat_1 %>%
+    group_by(kauf_gew, sex) %>%
+        summarise(
+        count = n(),
+        mean = mean(a6, na.rm = TRUE),
+        sd = sd(a6, na.rm = TRUE)
+  )
 ##############################################################
 #  Achtung! 6 vs. 8 sind verschieden gepolte Likert Skalen.  #
 ##############################################################
+
