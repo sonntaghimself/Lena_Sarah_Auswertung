@@ -16,7 +16,6 @@ dat$sex <- dat$a9_gesch %>% as_factor()
 levels(dat$sex) <- list("f" = "weiblich", "m" = "männlich")
 
 dat %>% nrow()
-dat_1 %>% nrow()
 
 ###############################################################################
 #      exclusion; dropping useless columns and giving meaningful names       #
@@ -746,7 +745,7 @@ p_a4_mf_un
 
 # in Freizeit #
 p_a4_mf_fr <- a4_mf %>% ggplot(aes(x = sex, y = Freizeit), colors = sex) +
-    geom_bar(stat = "identity")
+    geom_bar(stat = "identity") +
     labs(title = "Benutzung der Lern-Apps in Abhängigkeit vom Geschlecht",
     x = "Geschlecht",
     y = "Anteil"
