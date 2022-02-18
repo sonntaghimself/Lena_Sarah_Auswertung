@@ -1,8 +1,8 @@
 library("tidyverse")
 library("haven")
 
-getwd()
-setwd("~/Desktop/Lena_Sarah_Auswertung")
+# getwd()
+# setwd("~/Desktop/Lena_Sarah_Auswertung")
 
 ###############################################################################
 #                             reading in the data                             #
@@ -16,9 +16,10 @@ dat$sex <- dat$a9_gesch %>% as_factor()
 levels(dat$sex) <- list("f" = "weiblich", "m" = "männlich")
 
 dat %>% nrow()
+dat_1 %>% nrow()
 
 ###############################################################################
-#      eexclusion; dropping useless columns and giving meaningful names       #
+#      exclusion; dropping useless columns and giving meaningful names       #
 ###############################################################################
 dat <-
     dat %>%
@@ -117,6 +118,10 @@ dat$a8 <-
 #     dat$a8 %>%
 #         as_factor()
 
+
+###############################################################################
+#           Ausschluss aller Vpn mit mind. einer fehlenden Antwort            #
+###############################################################################
 dat %>% nrow()
 
 dat %>%
@@ -127,10 +132,12 @@ dat <-
     dat %>%
     na.omit()
 
+dat %>% nrow()
+# [1] 953
+
 #########################################################
 #  excluding everyone who isn't kaufmännisch oder gew.  #
 #########################################################
-
 dat <-
     dat %>%
         subset(
@@ -138,6 +145,8 @@ dat <-
         )
 
 dat$kauf_gew <- as.factor(dat$kauf_gew)
+dat %>% nrow()
+# [1] 699
 
 ###############################################################################
 #                           few descriptive things                            #
@@ -172,15 +181,34 @@ pl_age
 dat$sex %>%
     table()
 
+pl_sex <-
+    dat %>%
+        ggplot(aes(sex)) +
+        geom_bar(stat="count") +
+        theme_minimal() +
+        labs(title = "Anteil der Geschlechter in der Stichprobe",
+             x = "Geschlecht",
+             y = "Anzahl in Gruppe"
+        )
+pl_sex %>% pdf()
+
   # f   m
 # 299 400
 #############
 #  N vs. n  #
 #############
 
+#######
+#  N  #
+#######
+# [1] 1694
+
+#######
+#  n  #
+#######
 dat %>%
     nrow()
-# [1] 1169
+# [1] 699
 
 ###############################################################################
 #                                  analysis (a4)                              #
@@ -257,6 +285,20 @@ t.test(dat$nicht ~ dat$kauf_gew, var.equal = TRUE)
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
  # -0.16105837 -0.01791473
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.6000000          0.6894866
+
+t.test(dat$nicht ~ dat$kauf_gew, var.equal = FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$nicht by dat$kauf_gew
+# t = -2.4308, df = 599.94, p-value = 0.01536
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to
+# 0
+# 95 percent confidence interval:
+ # -0.16178443 -0.01718867
 # sample estimates:
  # mean in group gew mean in group kauf
         #  0.6000000          0.6894866
@@ -350,6 +392,19 @@ t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
  # mean in group gew mean in group kauf
         #  0.3206897          0.2371638
 
+t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$Freizeit by dat$kauf_gew
+# t = 2.414, df = 585.5, p-value = 0.01609
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to
+# 0
+# 95 percent confidence interval:
+ # 0.01556883 0.15148286
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.3206897          0.2371638
 
 ########################################
 #  Unterschied zwischen Geschlechtern  #
@@ -382,6 +437,20 @@ t.test(dat$nicht ~ dat$kauf_gew, var.equal=TRUE)
 # alternative hypothesis: true difference in means between group gew and group kauf is not equal to 0
 # 95 percent confidence interval:
  # -0.16105837 -0.01791473
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.6000000          0.6894866
+
+t.test(dat$nicht ~ dat$kauf_gew, var.equal=FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$nicht by dat$kauf_gew
+# t = -2.4308, df = 599.94, p-value = 0.01536
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to
+# 0
+# 95 percent confidence interval:
+ # -0.16178443 -0.01718867
 # sample estimates:
  # mean in group gew mean in group kauf
         #  0.6000000          0.6894866
@@ -473,6 +542,20 @@ t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=TRUE)
  # mean in group gew mean in group kauf
         #  0.3206897          0.2371638
 
+t.test(dat$Freizeit ~ dat$kauf_gew, var.equal=FALSE)
+
+        # Welch Two Sample t-test
+
+# data:  dat$Freizeit by dat$kauf_gew
+# t = 2.414, df = 585.5, p-value = 0.01609
+# alternative hypothesis: true difference in means between group gew and group kauf is not equal to
+# 0
+# 95 percent confidence interval:
+ # 0.01556883 0.15148286
+# sample estimates:
+ # mean in group gew mean in group kauf
+        #  0.3206897          0.2371638
+
 
 ##########################################################################
 #  geg: 4 im Unterricht benutzen, kauf_gew & Sex -> Aufg. 6 und Aufg. 8  #
@@ -492,6 +575,28 @@ dat_1 <-
 #         mean = mean(a6, na.rm = TRUE),
 #         sd = sd(a6, na.rm = TRUE)
 #   )
+
+
+##########################################
+#  Vpn, die Apps im Unterricht benutzen  #
+##########################################
+# [1] 54
+
+###############
+#  davon gew  #
+###############
+dat_1 %>%
+    subset(kauf_gew == "gew") %>%
+    nrow()
+# [1] 30
+
+###############
+#  davon kauf #
+###############
+dat_1 %>%
+    subset(kauf_gew == "kauf") %>%
+    nrow()
+# [1] 24
 
 ########
 #  a6  #
@@ -533,6 +638,13 @@ a4_kg <- dat %>%
     summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
                      ,mean))
 
+# a4_kg
+# # A tibble: 2 × 5
+#   kauf_gew nicht Unterricht Arbeitsplatz Freizeit
+#   <fct>    <dbl>      <dbl>        <dbl>    <dbl>
+# 1 gew      0.6       0.103        0.0517    0.321
+# 2 kauf     0.689     0.0587       0.0342    0.237
+
 #####################
 #  aggregating Sex  #
 #####################
@@ -540,6 +652,13 @@ a4_mf <- dat %>%
     group_by(sex) %>%
     summarise(across(c(nicht, Unterricht, Arbeitsplatz, Freizeit)
                      ,mean))
+
+ # a4_mf
+# # A tibble: 2 × 5
+ #  sex   nicht Unterricht Arbeitsplatz Freizeit
+ #  <fct> <dbl>      <dbl>        <dbl>    <dbl>
+# 1 f     0.639     0.0602       0.0268    0.288
+# 2 m     0.663     0.0900       0.0525    0.260
 
 ##############################
 #  Kaufmännisch; Gewerblich  #
